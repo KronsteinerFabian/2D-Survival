@@ -20,7 +20,7 @@ public class Player {
         shapeRenderer.circle(x,y,2,20);
         shapeRenderer.end();
 
-        System.out.println(x+" "+y);
+       // System.out.println(x+" "+y);
     }
 
     public void move(float plusX,float plusY){

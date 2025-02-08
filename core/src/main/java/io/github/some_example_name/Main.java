@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import javafx.scene.shape.Rectangle;
 
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
@@ -21,6 +22,7 @@ public class Main extends ApplicationAdapter {
     private Player player;
     private OrthographicCamera cam;
     private World world;
+    private Hindernis hindernis;
 
     @Override
     public void create() {
@@ -45,6 +47,8 @@ public class Main extends ApplicationAdapter {
 
         cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
         cam.update();
+
+        hindernis = new Hindernis("hindernis.jpg",batch,new Rectangle(0,0,20,40));
     }
 
     @Override
@@ -59,6 +63,7 @@ public class Main extends ApplicationAdapter {
         batch.setProjectionMatrix(cam.combined);
         batch.begin();
         map.draw(batch);
+        hindernis.render(cam);
         batch.end();
 
         player.render(cam);
