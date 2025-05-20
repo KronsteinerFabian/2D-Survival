@@ -13,20 +13,20 @@ public class World {
     private SpriteBatch spriteBatchRenderer;
     private LinkedList<Hindernis> hinderisse;
 
-    public World(String worldSpritePath, SpriteBatch spriteBatchRenderer){
+    public World(String worldSpritePath, SpriteBatch spriteBatchRenderer) {
         worldSprite = new Sprite(new Texture(worldSpritePath));
-        this.spriteBatchRenderer=spriteBatchRenderer;
+        this.spriteBatchRenderer = spriteBatchRenderer;
         hinderisse = new LinkedList<>();
 
     }
 
-    public void render(OrthographicCamera cam){
-       spriteBatchRenderer.setProjectionMatrix(cam.combined);
-       worldSprite.draw(spriteBatchRenderer);
-       spriteBatchRenderer.end();
+    public void render(OrthographicCamera cam) {
+        spriteBatchRenderer.setProjectionMatrix(cam.combined);
+        worldSprite.draw(spriteBatchRenderer);
+        spriteBatchRenderer.end();
     }
 
-    public void dispose(){
+    public void dispose() {
 
     }
 }
