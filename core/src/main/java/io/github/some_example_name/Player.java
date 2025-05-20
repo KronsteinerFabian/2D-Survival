@@ -15,8 +15,14 @@ public class Player {
     private float current_velocityY = 0;
 
 
+
     public Player() {
         shapeRenderer = new ShapeRenderer();
+        //playerAnimator = new PlayerAnimator();
+    }
+
+    public void setPlayerAnimator(PlayerAnimator playerAnimator){
+        this.playerAnimator=playerAnimator;
     }
 
     public void render(OrthographicCamera cam) {
@@ -25,7 +31,12 @@ public class Player {
         shapeRenderer.circle(x, y, 2, 20);
         shapeRenderer.end();
 
+
         // System.out.println(x+" "+y);
+    }
+
+    public void renderAnimation(SpriteBatch batch){
+        playerAnimator.render(batch);
     }
 
     public void move(float plusX, float plusY) {
@@ -68,6 +79,29 @@ public class Player {
 
         this.x += current_velocityX;
         this.y += current_velocityY;
+
+       updateAnimation();
+    }
+
+    private void updateAnimation() {
+        if(current_velocityX == 0 && current_velocityY ==0) {
+            System.out.println("Standing");
+            playerAnimator.updateFacing(Facing.STANDING);
+        }else if(current_velocityX >0) {
+            System.out.println("Right");
+            playerAnimator.updateFacing(Facing.RIGHT);
+        }else if(current_velocityX<0){
+            System.out.println("Left");
+            playerAnimator.updateFacing(Facing.LEFT);
+        }else if(current_velocityY>0){
+            System.out.println("Up");
+            playerAnimator.updateFacing(Facing.UP);
+        }else if (current_velocityY<0){
+            System.out.println("Down");
+            playerAnimator.updateFacing(Facing.DOWN);
+        }
+
+        playerAnimator.updatePosition(x,y);
     }
 
     private float applyDrag(float velocity) {

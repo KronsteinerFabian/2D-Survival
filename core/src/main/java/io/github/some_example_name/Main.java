@@ -25,6 +25,7 @@ public class Main extends ApplicationAdapter {
     private OrthographicCamera cam;
     private World world;
     private Hindernis hindernis;
+    private PlayerAnimator playerAnimator;
 
     @Override
     public void create() {
@@ -51,6 +52,9 @@ public class Main extends ApplicationAdapter {
         cam.update();
 
         hindernis = new Hindernis("hindernis.jpg", batch, new Rectangle(0, 0, 50, 50));
+        playerAnimator = new PlayerAnimator();
+        playerAnimator.create();
+        player.setPlayerAnimator(playerAnimator);
     }
 
     @Override
@@ -67,6 +71,8 @@ public class Main extends ApplicationAdapter {
         map.draw(batch);
         //hindernis.render(cam);
         //hindernis.render(cam);
+        //playerAnimator.render(batch);
+         player.renderAnimation(batch);
         batch.end();
 
         player.render(cam);
@@ -110,7 +116,7 @@ public class Main extends ApplicationAdapter {
         player.moveDirection(x, y);
 
 
-        cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, 100 / cam.viewportWidth);
+        cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, 150 / cam.viewportWidth);
 
         float effectiveViewportWidth = cam.viewportWidth * cam.zoom;
         float effectiveViewportHeight = cam.viewportHeight * cam.zoom;
