@@ -85,19 +85,19 @@ public class Player {
 
     private void updateAnimation() {
         if(current_velocityX == 0 && current_velocityY ==0) {
-            System.out.println("Standing");
+           // System.out.println("Standing");
             playerAnimator.updateFacing(Facing.STANDING);
         }else if(current_velocityX >0) {
-            System.out.println("Right");
+           // System.out.println("Right");
             playerAnimator.updateFacing(Facing.RIGHT);
         }else if(current_velocityX<0){
-            System.out.println("Left");
+          //  System.out.println("Left");
             playerAnimator.updateFacing(Facing.LEFT);
         }else if(current_velocityY>0){
-            System.out.println("Up");
+           // System.out.println("Up");
             playerAnimator.updateFacing(Facing.UP);
         }else if (current_velocityY<0){
-            System.out.println("Down");
+          //  System.out.println("Down");
             playerAnimator.updateFacing(Facing.DOWN);
         }
 

@@ -1,6 +1,7 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 
 /**
@@ -26,13 +28,17 @@ public class Main extends ApplicationAdapter {
     private World world;
     private Hindernis hindernis;
     private PlayerAnimator playerAnimator;
+    private Audio audio;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
-        map = new Sprite(new Texture("libgdx.png"));
+        Texture mapTexture = new Texture(Gdx.files.internal("island.jpg"));
+        //map = new Sprite(new Texture("libgdx.png"));
+        map = new Sprite(mapTexture);
         map.setPosition(0, 0);
-        map.setSize(100, 50);
+        //map.setSize(100, 50);
+        //map.setSize(1280, 500);
 
         cam = new OrthographicCamera();
         cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
@@ -55,6 +61,8 @@ public class Main extends ApplicationAdapter {
         playerAnimator = new PlayerAnimator();
         playerAnimator.create();
         player.setPlayerAnimator(playerAnimator);
+        audio = Gdx.audio;
+        audio.newMusic(Gdx.files.internal("pauseMenuMusic.mp3")).play();
     }
 
     @Override
@@ -75,7 +83,7 @@ public class Main extends ApplicationAdapter {
          player.renderAnimation(batch);
         batch.end();
 
-        player.render(cam);
+        //player.render(cam);
     }
 
     public void update() {
@@ -112,11 +120,14 @@ public class Main extends ApplicationAdapter {
             //player.move(0,VELOCITY);
             y = 1;
         }
+        if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
+            Gdx.app.exit();
+        }
 
         player.moveDirection(x, y);
 
 
-        cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, 150 / cam.viewportWidth);
+        cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, 500 / cam.viewportWidth);
 
         float effectiveViewportWidth = cam.viewportWidth * cam.zoom;
         float effectiveViewportHeight = cam.viewportHeight * cam.zoom;

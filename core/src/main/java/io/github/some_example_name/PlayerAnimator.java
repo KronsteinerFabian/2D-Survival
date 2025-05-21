@@ -109,7 +109,7 @@ public class PlayerAnimator implements ApplicationListener{
     public void updatePosition(float x,float y){
 
         xPos=x-(frame_HEIGHT/2);
-        yPos=y-(frame_WIDTH/2);
+        yPos=y-(frame_WIDTH/3);
     }
 
     public void render(SpriteBatch spriteBatch) {
