@@ -4,12 +4,14 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import io.github.some_example_name.Entity;
 import io.github.some_example_name.Facing;
 
-public class Enemy {
-    public float x = 2500;
-    public float y = 2500;
+public class Enemy extends Entity {
+    //public float x = 2500;
+    //public float y = 2500;
     private EnemyAnimator enemyAnimator;
     private ShapeRenderer shapeRenderer;
     private static final float MAX_VELOCITY = 10 * 6f / 60f;
@@ -20,9 +22,12 @@ public class Enemy {
     private int tilexCenter = 0;
     private int tilexRight = 0;
     private int tileyCenter = 0;
+    public Rectangle hitbox = new Rectangle(x-40,y-40,80,80);
 
 
     public Enemy() {
+        x=2500;
+        y=2500;
         shapeRenderer = new ShapeRenderer();
         //playerAnimator = new PlayerAnimator();
     }
@@ -47,6 +52,7 @@ public class Enemy {
         // System.out.println(x+" "+y);
     }
 
+    @Override
     public void renderAnimation(SpriteBatch batch) {
         enemyAnimator.render(batch);
     }
@@ -73,6 +79,7 @@ public class Enemy {
         current_velocityY = richtung.y*MAX_VELOCITY;
 
         updateAnimation();
+        hitbox.setPosition(x-40,y-40);
     }
 
     private boolean checkHorizontalTileCollision(float x,float y) {

@@ -20,6 +20,10 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.some_example_name.enemy.Enemy;
 import io.github.some_example_name.enemy.EnemyAnimator;
 
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.TreeSet;
+
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
@@ -41,36 +45,33 @@ public class Main extends ApplicationAdapter {
     private TiledMapTileLayer collisionLayer;
     private Enemy enemy;
     private EnemyAnimator enemyAnimator;
+    private TreeSet<Entity> entities = new TreeSet<>(new Comparator<Entity>() {
+        @Override
+        public int compare(Entity o1, Entity o2) {
+            if (o1.y>o2.y)
+                return -1;
+            else if (o1.y<o2.y)
+                return 1;
+            else
+                return 0;
+        }
+    });
 
     @Override
     public void create() {
         batch = new SpriteBatch();
         mapTexture = new Texture("island.jpg");
 
-        //map = new Sprite(new Texture("libgdx.png"));
-        //map = new Sprite(mapTexture);
-        //map.setPosition(0, 0);
-        //map.setSize(100, 50);
-        //map.setSize(mapTexture.getWidth(),mapTexture.getHeight());
-
-        //cam = new OrthographicCamera();
-        //cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
-        //cam.update();
         player = new Player();
 
         cam = new OrthographicCamera();
         screenViewport = new ScreenViewport(cam);
 
 
-        //cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
-        //cam.update();
-
-        //hindernis = new Hindernis("hindernis.jpg", batch, new Rectangle(0, 0, 50, 50));
         playerAnimator = new PlayerAnimator();
         playerAnimator.create();
         player.setPlayerAnimator(playerAnimator);
 
-        //tiledMap = new TmxMapLoader().load("tileMap2/FabianStuff.tmx");
 
         FileHandleResolver resolver = new InternalFileHandleResolver();
         TmxMapLoader.Parameters params = new TmxMapLoader.Parameters();
@@ -88,6 +89,9 @@ public class Main extends ApplicationAdapter {
         enemyAnimator.create();
         enemy.setEnemyAnimator(enemyAnimator);
 
+        entities.add(player);
+        entities.add(enemy);
+
         audio = Gdx.audio;
         audio.newMusic(Gdx.files.internal("pauseMenuMusic.mp3")).play();
     }
@@ -101,19 +105,11 @@ public class Main extends ApplicationAdapter {
     public void render() {
         //world.step(1 / 60f, 6, 2);
         update();
+
+
+
         cam.position.set(player.x, player.y, 0);
         cam.update();
-
-//        int currentTilex = (int) player.x / 16/5;
-//        int currentTiley = (int) player.y / 16/5;
-//
-//        if(collisionLayer.getCell(currentTilex,currentTiley)==null){
-//            System.out.println(currentTilex+" "+currentTiley);
-//        }
-//        else{
-//            System.out.println("in bounds");
-//        }
-
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); //ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         tileMapRenderer.setView(cam);
@@ -121,21 +117,31 @@ public class Main extends ApplicationAdapter {
 
         batch.setProjectionMatrix(cam.combined);
         batch.begin();
-        //batch.draw(mapTexture, 0, 0);
-        //hindernis.render(cam);
-        //hindernis.render(cam);
+
+        entities.remove(player);
+        entities.remove(enemy);
+        entities.add(player);
+        entities.add(enemy);
+        for (Entity e : entities){
+            e.renderAnimation(batch);
+        }
+
         //playerAnimator.render(batch);
-        player.renderAnimation(batch);
-        enemy.renderAnimation(batch);
+        //player.renderAnimation(batch);
+        //enemy.renderAnimation(batch);
         batch.end();
 
+        //Shaperenders
         player.render(cam);
         enemy.render(cam);
     }
 
     public void update() {
         handleInput();
-        enemy.moveToPlayer(player.x,player.y);
+        if (!player.hitbox.overlaps(enemy.hitbox))
+            enemy.moveToPlayer(player.x,player.y);
+
+        //System.out.println(player.hitbox.overlaps(enemy.hitbox));
     }
 
     private void handleInput() {

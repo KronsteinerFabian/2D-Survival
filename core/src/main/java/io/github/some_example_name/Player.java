@@ -4,10 +4,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Rectangle;
 
-public class Player {
-    public float x = 2000;
-    public float y = 2000;
+public class Player extends Entity {
+    //public float x = 2000;
+    //public float y = 2000;
     private PlayerAnimator playerAnimator;
     private ShapeRenderer shapeRenderer;
     private static final float MAX_VELOCITY = 20 * 6f / 60f;
@@ -18,10 +19,13 @@ public class Player {
     private int tilexCenter = 0;
     private int tilexRight = 0;
     private int tileyCenter = 0;
+    public Rectangle hitbox = new Rectangle(x-40,y-40,80,80);
 
 
     public Player() {
         shapeRenderer = new ShapeRenderer();
+        x=2000;
+        y=2000;
         //playerAnimator = new PlayerAnimator();
     }
 
@@ -38,13 +42,14 @@ public class Player {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.circle(x, y, 2, 20);
         shapeRenderer.circle(x + playerAnimator.getFrame_WIDTH() * (1 / PlayerAnimator.getSIZEING()) / 2, y, 5, 20);
-
+        //shapeRenderer.rect(x-40,y-40,80,80);
         shapeRenderer.end();
 
 
         // System.out.println(x+" "+y);
     }
 
+    @Override
     public void renderAnimation(SpriteBatch batch) {
         playerAnimator.render(batch);
     }
@@ -103,6 +108,7 @@ public class Player {
 
 
         updateAnimation();
+        hitbox.setPosition(this.x-40,this.y-40);
     }
 
     private boolean checkHorizontalTileCollision(float x,float y) {
