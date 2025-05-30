@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 
 import java.text.BreakIterator;
 
@@ -32,6 +33,9 @@ public class PlayerAnimator implements ApplicationListener{
 
     private float frame_HEIGHT;
     private float frame_WIDTH;
+
+    private static float SIZEING=5f;
+
 
 
 
@@ -91,8 +95,8 @@ public class PlayerAnimator implements ApplicationListener{
         // time to 0
         stateTime = 0f;
 
-        frame_HEIGHT = standingFrames[0].getRegionHeight();
-        frame_WIDTH = standingFrames[0].getRegionWidth();
+        frame_HEIGHT = standingFrames[0].getRegionHeight()*SIZEING;
+        frame_WIDTH = standingFrames[0].getRegionWidth()*SIZEING;
 
     }
 
@@ -106,7 +110,17 @@ public class PlayerAnimator implements ApplicationListener{
 
     }
 
-    public void updatePosition(float x,float y){
+    public float getFrame_WIDTH() {
+        return frame_WIDTH;
+    }
+
+    public float getFrame_HEIGHT() {
+        return frame_HEIGHT;
+    }
+
+
+
+    public void updatePosition(float x, float y){
 
         xPos=x-(frame_HEIGHT/2);
         yPos=y-(frame_WIDTH/3);
@@ -142,11 +156,15 @@ public class PlayerAnimator implements ApplicationListener{
                 currentFrame = walkingUpAnimation.getKeyFrame(stateTime, true);
         }
 
-        spriteBatch.draw(currentFrame, xPos, yPos); // Draw current frame at (50, 50)
+        spriteBatch.draw(currentFrame, xPos, yPos,frame_WIDTH,frame_HEIGHT); // Draw current frame at (50, 50)
     }
 
     public void updateFacing(Facing facing){
         this.facing=facing;
+    }
+
+    public static float getSIZEING() {
+        return SIZEING;
     }
 
     @Override

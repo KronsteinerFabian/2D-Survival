@@ -4,16 +4,24 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+import static java.lang.System.load;
 
 
 /**
@@ -29,61 +37,87 @@ public class Main extends ApplicationAdapter {
     private Hindernis hindernis;
     private PlayerAnimator playerAnimator;
     private Audio audio;
+    private Texture mapTexture;
+    private ScreenViewport screenViewport;
+    private TiledMap tiledMap;
+    private OrthogonalTiledMapRenderer tileMapRenderer;
+    private TiledMapTileLayer collisionLayer;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
-        Texture mapTexture = new Texture(Gdx.files.internal("island.jpg"));
-        //map = new Sprite(new Texture("libgdx.png"));
-        map = new Sprite(mapTexture);
-        map.setPosition(0, 0);
-        //map.setSize(100, 50);
-        //map.setSize(1280, 500);
+        mapTexture = new Texture("island.jpg");
 
-        cam = new OrthographicCamera();
-        cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
-        cam.update();
+        //map = new Sprite(new Texture("libgdx.png"));
+        //map = new Sprite(mapTexture);
+        //map.setPosition(0, 0);
+        //map.setSize(100, 50);
+        //map.setSize(mapTexture.getWidth(),mapTexture.getHeight());
+
+        //cam = new OrthographicCamera();
+        //cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
+        //cam.update();
         player = new Player();
 
-        world = new World(new Vector2(0, 0), true);
+        cam = new OrthographicCamera();
+        screenViewport = new ScreenViewport(cam);
 
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
 
-        // Constructs a new OrthographicCamera, using the given viewport width and height
-        // Height is multiplied by aspect ratio.
-        cam = new OrthographicCamera(30, 30 * (h / w));
+        //cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
+        //cam.update();
 
-        cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
-        cam.update();
-
-        hindernis = new Hindernis("hindernis.jpg", batch, new Rectangle(0, 0, 50, 50));
+        //hindernis = new Hindernis("hindernis.jpg", batch, new Rectangle(0, 0, 50, 50));
         playerAnimator = new PlayerAnimator();
         playerAnimator.create();
         player.setPlayerAnimator(playerAnimator);
+
+        tiledMap = new TmxMapLoader().load("tileMap2/FabianStuff.tmx");
+        tileMapRenderer = new OrthogonalTiledMapRenderer(tiledMap,5f);
+        collisionLayer = (TiledMapTileLayer) tiledMap.getLayers().get("Ground");
+
+        player.setTiledMapTileLayer(collisionLayer);
+
         audio = Gdx.audio;
         audio.newMusic(Gdx.files.internal("pauseMenuMusic.mp3")).play();
     }
 
     @Override
+    public void resize(int width, int height) {
+        screenViewport.update(width, height);
+    }
+
+    @Override
     public void render() {
-        world.step(1 / 60f, 6, 2);
+        //world.step(1 / 60f, 6, 2);
         update();
         cam.position.set(player.x, player.y, 0);
         cam.update();
 
+//        int currentTilex = (int) player.x / 16/5;
+//        int currentTiley = (int) player.y / 16/5;
+//
+//        if(collisionLayer.getCell(currentTilex,currentTiley)==null){
+//            System.out.println(currentTilex+" "+currentTiley);
+//        }
+//        else{
+//            System.out.println("in bounds");
+//        }
+
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT); //ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+        tileMapRenderer.setView(cam);
+        tileMapRenderer.render();
+
         batch.setProjectionMatrix(cam.combined);
         batch.begin();
-        map.draw(batch);
+        //batch.draw(mapTexture, 0, 0);
         //hindernis.render(cam);
         //hindernis.render(cam);
         //playerAnimator.render(batch);
-         player.renderAnimation(batch);
+        player.renderAnimation(batch);
         batch.end();
 
-        //player.render(cam);
+        player.render(cam);
     }
 
     public void update() {
@@ -120,14 +154,14 @@ public class Main extends ApplicationAdapter {
             //player.move(0,VELOCITY);
             y = 1;
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
 
         player.moveDirection(x, y);
 
 
-        cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, 500 / cam.viewportWidth);
+        //cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, 500 / cam.viewportWidth);
 
         float effectiveViewportWidth = cam.viewportWidth * cam.zoom;
         float effectiveViewportHeight = cam.viewportHeight * cam.zoom;
