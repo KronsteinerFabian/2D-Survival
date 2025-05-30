@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.11.1-99-gec89c545" name="BigTileSet16x16" tilewidth="16" tileheight="16" tilecount="42" columns="6">
- <image source="./BigTileSet16x16.png" width="96" height="112"/>
+ <image source="BigTileSet16x16.png" width="96" height="112"/>
  <wangsets>
   <wangset name="Ground" type="mixed" tile="-1">
    <wangcolor name="Ground" color="#005500" tile="-1" probability="1"/>

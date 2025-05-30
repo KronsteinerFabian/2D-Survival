@@ -4,7 +4,8 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.assets.loaders.resolvers.ExternalFileHandleResolver;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,14 +15,10 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
-import static java.lang.System.load;
+import io.github.some_example_name.enemy.Enemy;
+import io.github.some_example_name.enemy.EnemyAnimator;
 
 
 /**
@@ -42,6 +39,8 @@ public class Main extends ApplicationAdapter {
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer tileMapRenderer;
     private TiledMapTileLayer collisionLayer;
+    private Enemy enemy;
+    private EnemyAnimator enemyAnimator;
 
     @Override
     public void create() {
@@ -71,11 +70,23 @@ public class Main extends ApplicationAdapter {
         playerAnimator.create();
         player.setPlayerAnimator(playerAnimator);
 
-        tiledMap = new TmxMapLoader().load("tileMap2/FabianStuff.tmx");
+        //tiledMap = new TmxMapLoader().load("tileMap2/FabianStuff.tmx");
+
+        FileHandleResolver resolver = new InternalFileHandleResolver();
+        TmxMapLoader.Parameters params = new TmxMapLoader.Parameters();
+        TmxMapLoader loader = new TmxMapLoader(resolver);
+        tiledMap = loader.load("tileMap2/FabianStuff.tmx", params);
+
+
         tileMapRenderer = new OrthogonalTiledMapRenderer(tiledMap,5f);
         collisionLayer = (TiledMapTileLayer) tiledMap.getLayers().get("Ground");
 
         player.setTiledMapTileLayer(collisionLayer);
+
+        enemy = new Enemy();
+        enemyAnimator = new EnemyAnimator();
+        enemyAnimator.create();
+        enemy.setEnemyAnimator(enemyAnimator);
 
         audio = Gdx.audio;
         audio.newMusic(Gdx.files.internal("pauseMenuMusic.mp3")).play();
@@ -115,13 +126,16 @@ public class Main extends ApplicationAdapter {
         //hindernis.render(cam);
         //playerAnimator.render(batch);
         player.renderAnimation(batch);
+        enemy.renderAnimation(batch);
         batch.end();
 
         player.render(cam);
+        enemy.render(cam);
     }
 
     public void update() {
         handleInput();
+        enemy.moveToPlayer(player.x,player.y);
     }
 
     private void handleInput() {
